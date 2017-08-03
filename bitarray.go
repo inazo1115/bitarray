@@ -48,7 +48,7 @@ func (bits *BitArray) Equal(other *BitArray) bool {
 		}
 	}
 	mask := uint32(math.Pow(2, float64(subIdx)) - 1)
-	return bits.data[bitIdx]&other.data[bitIdx]&mask > 0
+	return bits.data[bitIdx]^other.data[bitIdx]&mask == 0
 }
 
 func (bits *BitArray) Get(idx int) (bool, error) {
