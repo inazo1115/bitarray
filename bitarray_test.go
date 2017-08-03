@@ -69,6 +69,12 @@ func TestEqual(t *testing.T) {
 	if bits0.Equal(bits1) {
 		t.Errorf("Equal(%v) must be false", bits1)
 	}
+
+	bits0 = NewBitArrayWithInit([]bool{true, true, false, false, true})
+	bits1 = NewBitArray(5, true)
+	if bits0.Equal(bits1) {
+		t.Errorf("Equal(%v) must be false", bits1)
+	}
 }
 
 func TestGet(t *testing.T) {
