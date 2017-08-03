@@ -69,7 +69,6 @@ func TestEqual(t *testing.T) {
 	if bits0.Equal(bits1) {
 		t.Errorf("Equal(%v) must be false", bits1)
 	}
-
 }
 
 func TestGet(t *testing.T) {

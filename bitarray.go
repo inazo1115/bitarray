@@ -13,10 +13,14 @@ type BitArray struct {
 	data []uint32
 }
 
-func NewBitArray(size int, val bool) *BitArray {
+func newBitArray(size int) *BitArray {
 	bitIdx, _ := getOffsets(size)
 	data := make([]uint32, bitIdx+1)
-	ret := &BitArray{size, data}
+	return &BitArray{size, data}
+}
+
+func NewBitArray(size int, val bool) *BitArray {
+	ret := newBitArray(size)
 	if val {
 		ret.Invert()
 	}
@@ -24,9 +28,7 @@ func NewBitArray(size int, val bool) *BitArray {
 }
 
 func NewBitArrayWithInit(init []bool) *BitArray {
-	bitIdx, _ := getOffsets(len(init))
-	data := make([]uint32, bitIdx+1)
-	ret := &BitArray{len(init), data}
+	ret := newBitArray(len(init))
 	for i, b := range init {
 		if b {
 			ret.Set(i, b)
@@ -39,13 +41,14 @@ func (bits *BitArray) Equal(other *BitArray) bool {
 	if bits.size != other.size {
 		return false
 	}
-	bitIdx, _ := getOffsets(bits.size)
-	for i := 0; i < bitIdx+1; i++ {
+	bitIdx, subIdx := getOffsets(bits.size)
+	for i := 0; i < bitIdx; i++ {
 		if bits.data[i]^other.data[i] != 0 {
 			return false
 		}
 	}
-	return true
+	mask := uint32(math.Pow(2, float64(subIdx)) - 1)
+	return bits.data[bitIdx]&other.data[bitIdx]&mask > 0
 }
 
 func (bits *BitArray) Get(idx int) (bool, error) {
