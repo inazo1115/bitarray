@@ -39,13 +39,14 @@ func (bits *BitArray) Equal(other *BitArray) bool {
 	if bits.size != other.size {
 		return false
 	}
-	bitIdx, _ := getOffsets(bits.size)
-	for i := 0; i < bitIdx+1; i++ {
+	bitIdx, subIdx := getOffsets(bits.size)
+	for i := 0; i < bitIdx; i++ {
 		if bits.data[i]^other.data[i] != 0 {
 			return false
 		}
 	}
-	return true
+	mask := uint32(math.Pow(2, float64(subIdx)) - 1)
+	return bits.data[bitIdx]&other.data[bitIdx]&mask > 0
 }
 
 func (bits *BitArray) Get(idx int) (bool, error) {
