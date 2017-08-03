@@ -13,10 +13,14 @@ type BitArray struct {
 	data []uint32
 }
 
-func NewBitArray(size int, val bool) *BitArray {
+func newBitArray(size int) *BitArray {
 	bitIdx, _ := getOffsets(size)
 	data := make([]uint32, bitIdx+1)
-	ret := &BitArray{size, data}
+	return &BitArray{size, data}
+}
+
+func NewBitArray(size int, val bool) *BitArray {
+	ret := newBitArray(size)
 	if val {
 		ret.Invert()
 	}
@@ -24,9 +28,7 @@ func NewBitArray(size int, val bool) *BitArray {
 }
 
 func NewBitArrayWithInit(init []bool) *BitArray {
-	bitIdx, _ := getOffsets(len(init))
-	data := make([]uint32, bitIdx+1)
-	ret := &BitArray{len(init), data}
+	ret := newBitArray(len(init))
 	for i, b := range init {
 		if b {
 			ret.Set(i, b)
