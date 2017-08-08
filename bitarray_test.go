@@ -11,47 +11,45 @@ const (
 
 func TestNewBitArray(t *testing.T) {
 
-	var tests = []struct {
-		size int
-		val  bool
-		out  string
+	tests := []struct {
+		size     int
+		val      bool
+		expected string
 	}{
-		{0, false, "BitArray: size=0, data=[]"},
-		{1, false, "BitArray: size=1, data=[0]"},
-		{1, true, "BitArray: size=1, data=[1]"},
-		{2, false, "BitArray: size=2, data=[0, 0]"},
-		{32, false, "BitArray: size=32, data=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"},
-		{33, false, "BitArray: size=33, data=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"},
+		{0, _0, "BitArray: size=0, data=[]"},
+		{1, _0, "BitArray: size=1, data=[0]"},
+		{1, _1, "BitArray: size=1, data=[1]"},
+		{2, _0, "BitArray: size=2, data=[0, 0]"},
+		{32, _0, "BitArray: size=32, data=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"},
+		{33, _0, "BitArray: size=33, data=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]"},
 	}
 
 	for _, test := range tests {
 		actual := NewBitArray(test.size, test.val).String()
-		expected := test.out
-		if actual != expected {
+		if actual != test.expected {
 			t.Errorf("NewBitArray(%v, %v) => '%v', want '%v'",
-				test.size, test.val, actual, expected)
+				test.size, test.val, actual, test.expected)
 		}
 	}
 }
 
 func TestNewBitArrayWithInit(t *testing.T) {
 
-	var tests = []struct {
-		in  []bool
-		out string
+	tests := []struct {
+		bits     []bool
+		expected string
 	}{
 		{[]bool{}, "BitArray: size=0, data=[]"},
-		{[]bool{false}, "BitArray: size=1, data=[0]"},
-		{[]bool{true}, "BitArray: size=1, data=[1]"},
-		{[]bool{false, true}, "BitArray: size=2, data=[0, 1]"},
+		{[]bool{_0}, "BitArray: size=1, data=[0]"},
+		{[]bool{_1}, "BitArray: size=1, data=[1]"},
+		{[]bool{_0, _1}, "BitArray: size=2, data=[0, 1]"},
 	}
 
 	for _, test := range tests {
-		actual := NewBitArrayWithInit(test.in).String()
-		expected := test.out
-		if actual != expected {
+		actual := NewBitArrayWithInit(test.bits).String()
+		if actual != test.expected {
 			t.Errorf("NewBitArrayWithInit(%v) => '%v', want '%v'",
-				test.in, actual, expected)
+				test.bits, actual, test.expected)
 		}
 	}
 }
@@ -60,23 +58,23 @@ func TestEqual(t *testing.T) {
 
 	var bits0, bits1 *BitArray
 
-	bits0 = NewBitArrayWithInit([]bool{true, true, false, false, true})
-	bits1 = NewBitArray(5, false)
-	bits1.Set(0, true)
-	bits1.Set(1, true)
-	bits1.Set(4, true)
+	bits0 = NewBitArrayWithInit([]bool{_1, _1, _0, _0, _1})
+	bits1 = NewBitArray(5, _0)
+	bits1.Set(0, _1)
+	bits1.Set(1, _1)
+	bits1.Set(4, _1)
 	if !bits0.Equal(bits1) {
 		t.Errorf("Equal(%v), wants %v", bits1, bits0)
 	}
 
-	bits0 = NewBitArrayWithInit([]bool{true, true, false, false, true})
-	bits1 = NewBitArray(5, false)
+	bits0 = NewBitArrayWithInit([]bool{_1, _1, _0, _0, _1})
+	bits1 = NewBitArray(5, _0)
 	if bits0.Equal(bits1) {
 		t.Errorf("Equal(%v) must be false", bits1)
 	}
 
-	bits0 = NewBitArrayWithInit([]bool{true, true, false, false, true})
-	bits1 = NewBitArray(5, true)
+	bits0 = NewBitArrayWithInit([]bool{_1, _1, _0, _0, _1})
+	bits1 = NewBitArray(5, _1)
 	if bits0.Equal(bits1) {
 		t.Errorf("Equal(%v) must be false", bits1)
 	}
@@ -84,8 +82,8 @@ func TestEqual(t *testing.T) {
 
 func TestGet(t *testing.T) {
 
-	bits := NewBitArrayWithInit([]bool{true, true, false, false, true})
-	expected := []bool{true, true, false, false, true}
+	bits := NewBitArrayWithInit([]bool{_1, _1, _0, _0, _1})
+	expected := []bool{_1, _1, _0, _0, _1}
 
 	for i, b := range expected {
 		actual, err := bits.Get(i)
@@ -105,11 +103,11 @@ func TestGet(t *testing.T) {
 
 func TestSet(t *testing.T) {
 
-	bits := NewBitArrayWithInit([]bool{true, true, false, false, true})
-	bits.Set(0, false)
-	bits.Set(3, true)
-	bits.Set(4, true)
-	expected := []bool{false, true, false, true, true}
+	bits := NewBitArrayWithInit([]bool{_1, _1, _0, _0, _1})
+	bits.Set(0, _0)
+	bits.Set(3, _1)
+	bits.Set(4, _1)
+	expected := []bool{_0, _1, _0, _1, _1}
 
 	for i, b := range expected {
 		actual, err := bits.Get(i)
@@ -124,11 +122,11 @@ func TestSet(t *testing.T) {
 
 func TestToggle(t *testing.T) {
 
-	bits := NewBitArrayWithInit([]bool{true, true, false, false, true})
+	bits := NewBitArrayWithInit([]bool{_1, _1, _0, _0, _1})
 	bits.Toggle(0)
 	bits.Toggle(1)
 	bits.Toggle(2)
-	expected := []bool{false, false, true, false, true}
+	expected := []bool{_0, _0, _1, _0, _1}
 
 	for i, b := range expected {
 		actual, err := bits.Get(i)
@@ -143,9 +141,9 @@ func TestToggle(t *testing.T) {
 
 func TestInvert(t *testing.T) {
 
-	bits := NewBitArrayWithInit([]bool{true, true, false, false, true})
+	bits := NewBitArrayWithInit([]bool{_1, _1, _0, _0, _1})
 	bits.Invert()
-	expected := []bool{false, false, true, true, false}
+	expected := []bool{_0, _0, _1, _1, _0}
 
 	for i, b := range expected {
 		actual, err := bits.Get(i)
@@ -160,24 +158,24 @@ func TestInvert(t *testing.T) {
 
 func TestBigSize(t *testing.T) {
 
-	bits := NewBitArray(500, false)
+	bits := NewBitArray(500, _0)
 
-	bits.Set(100, true)
-	bits.Set(200, true)
-	bits.Set(300, true)
-	bits.Set(400, true)
+	bits.Set(100, _1)
+	bits.Set(200, _1)
+	bits.Set(300, _1)
+	bits.Set(400, _1)
 
 	b, _ := bits.Get(99)
-	if b != false {
-		t.Errorf("Get(%v) => %v", 99, true)
+	if b != _0 {
+		t.Errorf("Get(%v) => %v", 99, _1)
 	}
 	b, _ = bits.Get(100)
-	if b != true {
-		t.Errorf("Get(%v) => %v", 100, false)
+	if b != _1 {
+		t.Errorf("Get(%v) => %v", 100, _0)
 	}
 	b, _ = bits.Get(101)
-	if b != false {
-		t.Errorf("Get(%v) => %v", 101, true)
+	if b != _0 {
+		t.Errorf("Get(%v) => %v", 101, _1)
 	}
 
 	count := 0
@@ -223,11 +221,11 @@ func TestBigSize(t *testing.T) {
 
 func TestRank(t *testing.T) {
 
-	var tests = []struct {
-		in  []bool
-		val bool
-		i   int
-		out int
+	tests := []struct {
+		bits     []bool
+		val      bool
+		idx      int
+		expected int
 	}{
 		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _0, 6, 2},
 		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _1, 6, 4},
@@ -235,25 +233,24 @@ func TestRank(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual, err := NewBitArrayWithInit(test.in).Rank(test.val, test.i)
+		actual, err := NewBitArrayWithInit(test.bits).Rank(test.val, test.idx)
 		if err != nil {
 			t.Errorf(err.Error())
 		}
-		expected := test.out
-		if actual != expected {
+		if actual != test.expected {
 			t.Errorf("Rank(%v, %v) => '%v', want '%v'",
-				test.val, test.i, actual, expected)
+				test.val, test.idx, actual, test.expected)
 		}
 	}
 }
 
 func TestSelect(t *testing.T) {
 
-	var tests = []struct {
-		in  []bool
-		val bool
-		i   int
-		out int
+	tests := []struct {
+		bits     []bool
+		val      bool
+		ith      int
+		expected int
 	}{
 		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _0, 1, 3},
 		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _0, 3, 7},
@@ -261,14 +258,13 @@ func TestSelect(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		actual, err := NewBitArrayWithInit(test.in).Select(test.val, test.i)
+		actual, err := NewBitArrayWithInit(test.bits).Select(test.val, test.ith)
 		if err != nil {
 			t.Errorf(err.Error())
 		}
-		expected := test.out
-		if actual != expected {
+		if actual != test.expected {
 			t.Errorf("Select(%v, %v) => '%v', want '%v'",
-				test.val, test.i, actual, expected)
+				test.val, test.ith, actual, test.expected)
 		}
 	}
 }
