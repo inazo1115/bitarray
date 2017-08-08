@@ -4,6 +4,11 @@ import (
 	"testing"
 )
 
+const (
+	_0 = false
+	_1 = true
+)
+
 func TestNewBitArray(t *testing.T) {
 
 	var tests = []struct {
@@ -213,5 +218,57 @@ func TestBigSize(t *testing.T) {
 	}
 	if count != 492 {
 		t.Errorf("the number of true is expected 492, but %d", count)
+	}
+}
+
+func TestRank(t *testing.T) {
+
+	var tests = []struct {
+		in  []bool
+		val bool
+		i   int
+		out int
+	}{
+		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _0, 6, 2},
+		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _1, 6, 4},
+		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _1, 10, 5},
+	}
+
+	for _, test := range tests {
+		actual, err := NewBitArrayWithInit(test.in).Rank(test.val, test.i)
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+		expected := test.out
+		if actual != expected {
+			t.Errorf("Rank(%v, %v) => '%v', want '%v'",
+				test.val, test.i, actual, expected)
+		}
+	}
+}
+
+func TestSelect(t *testing.T) {
+
+	var tests = []struct {
+		in  []bool
+		val bool
+		i   int
+		out int
+	}{
+		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _0, 1, 3},
+		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _0, 3, 7},
+		{[]bool{_0, _1, _1, _0, _1, _1, _0, _0, _1, _0, _0}, _1, 3, 5},
+	}
+
+	for _, test := range tests {
+		actual, err := NewBitArrayWithInit(test.in).Select(test.val, test.i)
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+		expected := test.out
+		if actual != expected {
+			t.Errorf("Select(%v, %v) => '%v', want '%v'",
+				test.val, test.i, actual, expected)
+		}
 	}
 }
