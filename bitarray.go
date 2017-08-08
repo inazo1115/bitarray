@@ -100,15 +100,12 @@ func (bits *BitArray) Rank(val bool, idx int) (int, error) {
 func (bits *BitArray) Select(val bool, ith int) (int, error) {
 	count := 0
 	for i := 0; i < bits.size; i++ {
-		b, err := bits.Access(i)
-		if err != nil {
-			return 0, err
-		}
+		b, _ := bits.Access(i)
 		if b == val {
 			count++
 		}
 		if count == ith+1 {
-			return i, err
+			return i, nil
 		}
 	}
 	return 0, fmt.Errorf("bits doesn't have %d + 1 %t", ith, val)
