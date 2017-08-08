@@ -129,6 +129,10 @@ func (bits *BitArray) Size() int {
 	return bits.size
 }
 
+func (bits *BitArray) Data() []uint32 {
+	return bits.data
+}
+
 func getOffsets(idx int) (int, int) {
 	bitIdx := idx / internalBitSize
 	subIdx := idx % internalBitSize
