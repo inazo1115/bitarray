@@ -80,6 +80,40 @@ func (bits *BitArray) Invert() {
 	}
 }
 
+func (bits *BitArray) Access(idx int) (bool, error) {
+	return bits.Get(idx)
+}
+
+func (bits *BitArray) Rank(val bool, idx int) (int, error) {
+	if idx >= bits.size {
+		return 0, fmt.Errorf("out of index: %d >= %d", idx, bits.size)
+	}
+	ret := 0
+	for i := 0; i < idx; i++ {
+		if b, _ := bits.Access(i); b == val {
+			ret++
+		}
+	}
+	return ret, nil
+}
+
+func (bits *BitArray) Select(val bool, ith int) (int, error) {
+	count := 0
+	for i := 0; i < bits.size; i++ {
+		b, err := bits.Access(i)
+		if err != nil {
+			return 0, err
+		}
+		if b == val {
+			count++
+		}
+		if count == ith+1 {
+			return i, err
+		}
+	}
+	return 0, fmt.Errorf("bits doesn't have %d + 1 %t", ith, val)
+}
+
 func (bits *BitArray) String() string {
 	tmp := make([]string, bits.size)
 	for i := 0; i < bits.size; i++ {
