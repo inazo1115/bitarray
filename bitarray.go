@@ -59,6 +59,23 @@ func (bits *BitArray) Get(idx int) (bool, error) {
 	return bits.data[bitIdx]&(1<<uint(subIdx)) > 0, nil
 }
 
+// TODO: optimize
+func (bits *BitArray) SubArray(from, to int) (*BitArray, error) {
+	if from > to {
+		return nil, fmt.Errorf("from must be smaller than to: %v > %v", from, to)
+	}
+	if to > bits.size {
+		return nil, fmt.Errorf("out of index: %d > %d", to, bits.size)
+	}
+
+	bools := make([]bool, 0)
+	for i := from; i < to; i++ {
+		b, _ := bits.Get(i)
+		bools = append(bools, b)
+	}
+	return NewBitArrayWithInit(bools), nil
+}
+
 func (bits *BitArray) Set(idx int, val bool) {
 	bitIdx, subIdx := getOffsets(idx)
 	if val {
@@ -131,6 +148,20 @@ func (bits *BitArray) Size() int {
 
 func (bits *BitArray) Data() []uint32 {
 	return bits.data
+}
+
+// TODO: optimize
+func (bits *BitArray) Int() int {
+	ret := 0
+	x := 1
+	for i := bits.size - 1; i >= 0; i-- {
+		b, _ := bits.Get(i)
+		if b {
+			ret += x
+		}
+		x *= 2
+	}
+	return ret
 }
 
 func getOffsets(idx int) (int, int) {
