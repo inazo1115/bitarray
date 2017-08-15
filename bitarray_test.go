@@ -101,6 +101,36 @@ func TestGet(t *testing.T) {
 	}
 }
 
+func TestSubArray(t *testing.T) {
+
+	tests := []struct {
+		bits     []bool
+		from     int
+		to       int
+		expected int
+	}{
+		{[]bool{_1, _1, _0, _0, _1}, 0, 1, 1},
+		{[]bool{_1, _1, _0, _0, _1}, 0, 2, 3},
+		{[]bool{_1, _1, _0, _0, _1}, 0, 3, 6},
+		{[]bool{_1, _1, _0, _0, _1}, 0, 4, 12},
+		{[]bool{_1, _1, _0, _0, _1}, 0, 5, 25},
+		{[]bool{_1, _1, _0, _0, _1}, 3, 5, 1},
+		{[]bool{_1, _1, _0, _0, _1}, 4, 5, 1},
+	}
+
+	for _, test := range tests {
+		sub, err := NewBitArrayWithInit(test.bits).SubArray(test.from, test.to)
+		if err != nil {
+			t.Errorf(err.Error())
+		}
+		actual := sub.Int()
+		if actual != test.expected {
+			t.Errorf("SubArray(%v, %v) => '%v', want '%v'",
+				test.from, test.to, actual, test.expected)
+		}
+	}
+}
+
 func TestSet(t *testing.T) {
 
 	bits := NewBitArrayWithInit([]bool{_1, _1, _0, _0, _1})
@@ -265,6 +295,32 @@ func TestSelect(t *testing.T) {
 		if actual != test.expected {
 			t.Errorf("Select(%v, %v) => '%v', want '%v'",
 				test.val, test.ith, actual, test.expected)
+		}
+	}
+}
+
+func TestInt(t *testing.T) {
+
+	tests := []struct {
+		bits     []bool
+		expected int
+	}{
+		{[]bool{_0}, 0},
+		{[]bool{_1}, 1},
+		{[]bool{_1, _0}, 2},
+		{[]bool{_1, _1}, 3},
+		{[]bool{_1, _0, _0}, 4},
+		{[]bool{_1, _0, _1}, 5},
+		{[]bool{_1, _1, _0}, 6},
+		{[]bool{_1, _1, _1}, 7},
+		{[]bool{_1, _0, _0, _0}, 8},
+		{[]bool{_1, _0, _0, _1}, 9},
+	}
+
+	for _, test := range tests {
+		actual := NewBitArrayWithInit(test.bits).Int()
+		if actual != test.expected {
+			t.Errorf("Int() => '%v', want '%v'", actual, test.expected)
 		}
 	}
 }
