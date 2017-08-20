@@ -47,7 +47,7 @@ func (bits *BitArray) Equal(other *BitArray) bool {
 			return false
 		}
 	}
-	mask := uint32(math.Pow(2, float64(subIdx)) - 1)
+	mask := uint32((1 << uint(subIdx+1)) - 1)
 	return bits.data[bitIdx]^other.data[bitIdx]&mask == 0
 }
 
@@ -59,21 +59,33 @@ func (bits *BitArray) Get(idx int) (bool, error) {
 	return bits.data[bitIdx]&(1<<uint(subIdx)) > 0, nil
 }
 
-// TODO: optimize
 func (bits *BitArray) SubArray(from, to int) (*BitArray, error) {
+
 	if from > to {
-		return nil, fmt.Errorf("from must be smaller than to: %v > %v", from, to)
-	}
-	if to > bits.size {
-		return nil, fmt.Errorf("out of index: %d > %d", to, bits.size)
+		return nil, fmt.Errorf("'from' must be smaller than 'to': %v > %v", from, to)
 	}
 
-	bools := make([]bool, 0)
-	for i := from; i < to; i++ {
-		b, _ := bits.Get(i)
-		bools = append(bools, b)
+	if to > bits.size {
+		to = bits.size
 	}
-	return NewBitArrayWithInit(bools), nil
+
+	fromBitIdx, fromSubIdx := getOffsets(from)
+	newSize := to - from
+	newBitIdx, _ := getOffsets(newSize)
+	newData := make([]uint32, newBitIdx+1)
+
+	if from/internalBitSize == to/internalBitSize {
+		newData[0] = bits.data[fromBitIdx] >> uint(fromSubIdx)
+		return &BitArray{newSize, newData}, nil
+	}
+
+	for i := 0; i < len(newData); i++ {
+		lower := bits.data[fromBitIdx+i] >> uint(fromSubIdx)
+		upper := bits.data[fromBitIdx+i+1] << uint(internalBitSize-fromSubIdx)
+		newData[i] = lower | upper
+	}
+
+	return &BitArray{newSize, newData}, nil
 }
 
 func (bits *BitArray) Set(idx int, val bool) {
