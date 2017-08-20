@@ -47,7 +47,7 @@ func (bits *BitArray) Equal(other *BitArray) bool {
 			return false
 		}
 	}
-	mask := uint32((1 << uint(subIdx+1)) - 1)
+	mask := uint32((1 << uint(subIdx)) - 1)
 	return bits.data[bitIdx]^other.data[bitIdx]&mask == 0
 }
 
@@ -162,7 +162,6 @@ func (bits *BitArray) Data() []uint32 {
 	return bits.data
 }
 
-// TODO: optimize
 func (bits *BitArray) Int() int {
 	ret := 0
 	x := 1
